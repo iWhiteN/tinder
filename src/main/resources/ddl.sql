@@ -13,7 +13,7 @@ CREATE TABLE likes (
 	id_users_to serial NOT NULL,
 	type_action varchar(50) NOT NULL,
 	CONSTRAINT likes_pkey PRIMARY KEY (id),
-	CONSTRAINT likes_type_action_check CHECK ((((type_action)::text = 'like'::text) AND ((type_action)::text = 'dislake'::text))),
+	CONSTRAINT likes_type_action_check CHECK ((((type_action)::text = 'like'::text) AND ((type_action)::text = 'dislike'::text))),
 	CONSTRAINT likes_id_users_from_fkey FOREIGN KEY (id_users_from) REFERENCES users(id),
 	CONSTRAINT likes_id_users_to_fkey FOREIGN KEY (id_users_to) REFERENCES users(id)
 );
