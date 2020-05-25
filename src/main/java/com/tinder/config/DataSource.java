@@ -20,9 +20,7 @@ public final class DataSource {
                 config.setJdbcUrl(prop.getProperty("db.url"));
                 config.setUsername(prop.getProperty("db.user"));
                 config.setPassword(prop.getProperty("db.password"));
-                config.setIdleTimeout(10000);
                 config.setMinimumIdle(5);
-                config.setMaxLifetime(100000);
                 config.setMaximumPoolSize(100);
                 dataSource = new HikariDataSource(config);
             } catch (IOException ex) {

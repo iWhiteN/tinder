@@ -1,8 +1,10 @@
 package com.tinder.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tinder.dao.MessagesDAOImpl;
 import com.tinder.model.Message;
 import com.tinder.model.MessageSocket;
+import com.tinder.utils.JsonConverterJackson;
 
 import javax.websocket.EncodeException;
 import javax.websocket.Session;
@@ -11,15 +13,18 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 public class MessagesService {
     private static MessagesService messagesService;
     private final MessagesDAOImpl messagesDAOImpl;
+    private final JsonConverterJackson jsonConverterJackson;
 
     private MessagesService() {
         messagesDAOImpl = MessagesDAOImpl.getInstance();
+        jsonConverterJackson = JsonConverterJackson.getInstance();
     }
 
     public static MessagesService getInstance() {
@@ -29,21 +34,23 @@ public class MessagesService {
         return messagesService;
     }
 
-    public List<Optional<Message>> getAllMessagesByMessagesId(int messagesId) throws SQLException {
-        return messagesDAOImpl.getAllMessagesByMessagesId(messagesId);
+    public String getAllMessagesByMessagesId(String messagesId) throws SQLException, JsonProcessingException {
+        Optional<List<Message>> allMessagesByMessagesId = messagesDAOImpl.getAllMessagesByMessagesId(Integer.parseInt(messagesId));
+        return jsonConverterJackson.toJson(allMessagesByMessagesId.get());
     }
 
     public List<Optional<Message>> getPartMessagesByMessagesIdAndTImeSend(int messagesId, LocalDateTime timeSend) throws SQLException {
         return messagesDAOImpl.getPartMessagesByMessagesIdAndTImeSend(messagesId, Timestamp.valueOf(timeSend));
     }
 
-    public void setMessage(String messageId, MessageSocket messageSocket) throws SQLException {
-        messagesDAOImpl.setMessage(Integer.parseInt(messageId), messageSocket, Timestamp.valueOf(LocalDateTime.now()));
-    }
-
-    public void sendMessage(MessageSocket messageSocket, Session session) {
-        String messageId = session.getUserProperties().get("id").toString();
+    public void setMessage(Session session, MessageSocket messageSocket) throws SQLException {
+        Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now());
         Set<Session> openSessions = session.getOpenSessions();
+        String messageId = session.getUserProperties().get("id").toString();
+        messageSocket.setDatetime(timestamp);
+
+        messagesDAOImpl.setMessage(Integer.parseInt(messageId), messageSocket);
+
         openSessions.forEach(ses -> {
             String id = ses.getUserProperties().get("id").toString();
             try {

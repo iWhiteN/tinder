@@ -24,10 +24,7 @@ public class MessagesEndpoint {
 
     @OnMessage
     public void onMessage(Session session, MessageSocket messageSocket) throws SQLException {
-        String messageId = session.getUserProperties().get("id").toString();
-        messagesService.setMessage(messageId, messageSocket);
-        messagesService.sendMessage(messageSocket, session);
-
+        messagesService.setMessage(session, messageSocket);
     }
 
     @OnClose

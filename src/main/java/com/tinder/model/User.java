@@ -14,7 +14,6 @@ public class User {
     private String email;
     @NonNull
     private String name;
-    @NonNull
     private String pass;
     @NonNull
     private Date lastLogin;
