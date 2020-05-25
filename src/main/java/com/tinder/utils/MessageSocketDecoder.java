@@ -1,21 +1,26 @@
-package com.tinder.websocket;
+package com.tinder.utils;
 
-import com.tinder.model.Message;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
+import com.tinder.model.MessageSocket;
 
-import javax.websocket.DecodeException;
 import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;
 
-public class MessageDecoder implements Decoder.Text<Message> {
+public class MessageSocketDecoder implements Decoder.Text<MessageSocket> {
 
     private static ObjectMapper mapper = new ObjectMapper();
 
-    @SneakyThrows
+
     @Override
-    public Message decode(String s) throws DecodeException {
-        return mapper.readValue(s, Message.class);
+    public MessageSocket decode(String s) {
+        MessageSocket message = null;
+        try {
+            message = mapper.readValue(s, MessageSocket.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return message;
     }
 
     @Override

@@ -1,15 +1,16 @@
-let userName = 123;
+const id = prompt("id");
 
 const host = document.location.host;
 const pathname = document.location.pathname;
-const ws = new WebSocket("ws://" + host + pathname + "/" + userName);
+const ws = new WebSocket("ws://" + host + pathname + "/" + id);
 
 ws.onmessage = function (event) {
     const messagesId = document.getElementById("messages");
     const message = JSON.parse(event.data);
+    console.log(message);
 
-    messagesId.innerHTML += message.from === userName ?
-        `<li class="send-msg float-right mb-2">
+    messagesId.innerHTML += message.from === id ?
+        `<li class="send-msg float-right mb-2">  
                 <p class="pt-1 pb-1 pl-2 pr-2 m-0 rounded">
                     ${message.content}
                 </p>
@@ -32,7 +33,6 @@ const sendMessage = document.getElementById("sendMessage");
 
 sendMessage.addEventListener("keypress", e => {
     if (e.key === 'Enter') {
-        console.log(e)
         const content = {
             "content": e.currentTarget.value
         };

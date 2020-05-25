@@ -1,40 +1,21 @@
 package com.tinder.model;
 
+import lombok.Builder;
+import lombok.Data;
+import lombok.NonNull;
+
+import java.util.Date;
+
+@Data
+@Builder
 public class Message {
-    private String from;
-    private String to;
+    @NonNull
+    private User from;
+    @NonNull
+    private User to;
+    @NonNull
     private String content;
-
-    @Override
-    public String toString() {
-        return "Message{" +
-                "from='" + from + '\'' +
-                ", to='" + to + '\'' +
-                ", content='" + content + '\'' +
-                '}';
-    }
-
-    public String getFrom() {
-        return from;
-    }
-
-    public void setFrom(String from) {
-        this.from = from;
-    }
-
-    public String getTo() {
-        return to;
-    }
-
-    public void setTo(String to) {
-        this.to = to;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
+    @NonNull
+    private Date datetimeSend;
+    private int messagesId;
 }
