@@ -6,12 +6,9 @@ import com.tinder.model.MessageSocket;
 import com.tinder.model.User;
 import com.zaxxer.hikari.HikariDataSource;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -87,7 +84,7 @@ public class MessagesDAOImpl implements MessagesDAO {
     }
 
     @Override
-    public List<Optional<Message>> getPartMessagesByMessagesIdAndTImeSend(int messagesId, Date timeSend) throws SQLException {
+    public List<Optional<Message>> getPartMessagesByMessagesIdAndTImeSend(int messagesId, Timestamp timeSend) throws SQLException {
         List<Optional<Message>> messages = new ArrayList<>();
         Connection connection = basicDataSource.getConnection();
         Statement statement = connection.createStatement();
@@ -144,7 +141,7 @@ public class MessagesDAOImpl implements MessagesDAO {
     }
 
     @Override
-    public void setMessage(int messageId, MessageSocket messageSocket, Date datetimeSend) throws SQLException {
+    public void setMessage(int messageId, MessageSocket messageSocket, Timestamp datetimeSend) throws SQLException {
         Connection connection = basicDataSource.getConnection();
         Statement statement = connection.createStatement();
         statement.executeQuery(
@@ -171,17 +168,21 @@ public class MessagesDAOImpl implements MessagesDAO {
                         "where id_users_from = " + from + "\n" +
                         "and id_users_to = " + to
         );
-        resultSet.next();
-        return Optional.of(resultSet.getInt("id_messages"));
+        Optional<Integer> result = Optional.empty();
+        while (resultSet.next()) {
+            result = Optional.of(resultSet.getInt("id_messages"));
+        }
+        return result;
     }
 
     @Override
-    public void setMessagesId(int messagesId, int from, int to) throws SQLException {
+    public void setMessagesId(int messagesId, int from, int to, Timestamp datetime) throws SQLException {
         Connection connection = basicDataSource.getConnection();
-        Statement statement = connection.createStatement();
-        statement.executeQuery(
-                "insert into messages (id_messages, id_users_from, id_users_to, datetime_send)\n" +
-                        "values (" + messagesId + "," + from + "," + to + ")"
-        );
+        PreparedStatement preparedStatement = connection.prepareStatement("insert into messages (id_messages, id_users_from, id_users_to, datetime_send) values(?,?,?,?)");
+        preparedStatement.setInt(1, messagesId);
+        preparedStatement.setInt(2, from);
+        preparedStatement.setInt(3, to);
+        preparedStatement.setTimestamp(4, datetime);
+        preparedStatement.execute();
     }
 }

@@ -8,7 +8,8 @@ import javax.websocket.EncodeException;
 import javax.websocket.Session;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Date;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -32,12 +33,12 @@ public class MessagesService {
         return messagesDAOImpl.getAllMessagesByMessagesId(messagesId);
     }
 
-    public List<Optional<Message>> getPartMessagesByMessagesIdAndTImeSend(int messagesId, Date timeSend) throws SQLException {
-        return messagesDAOImpl.getPartMessagesByMessagesIdAndTImeSend(messagesId, timeSend);
+    public List<Optional<Message>> getPartMessagesByMessagesIdAndTImeSend(int messagesId, LocalDateTime timeSend) throws SQLException {
+        return messagesDAOImpl.getPartMessagesByMessagesIdAndTImeSend(messagesId, Timestamp.valueOf(timeSend));
     }
 
     public void setMessage(String messageId, MessageSocket messageSocket) throws SQLException {
-        messagesDAOImpl.setMessage(Integer.parseInt(messageId), messageSocket, new Date());
+        messagesDAOImpl.setMessage(Integer.parseInt(messageId), messageSocket, Timestamp.valueOf(LocalDateTime.now()));
     }
 
     public void sendMessage(MessageSocket messageSocket, Session session) {
@@ -62,7 +63,7 @@ public class MessagesService {
     public int setMessagesId(String idFrom, String idTo) throws SQLException {
         messagesDAOImpl.setMessagesId(Integer.parseInt(idFrom + idTo),
                 Integer.parseInt(idFrom),
-                Integer.parseInt(idTo));
+                Integer.parseInt(idTo), Timestamp.valueOf(LocalDateTime.now()));
 
         return Integer.parseInt(idFrom + idTo);
     }

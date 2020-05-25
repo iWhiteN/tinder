@@ -19,14 +19,11 @@ public class MessagesEndpoint {
 
     @OnOpen
     public void onOpen(Session session, @PathParam("id") String id) {
-        System.out.println("onOpen " + session.getId());
         session.getUserProperties().put("id", id);
     }
 
     @OnMessage
     public void onMessage(Session session, MessageSocket messageSocket) throws SQLException {
-        System.out.println("onMessage \n" + messageSocket.toString());
-
         String messageId = session.getUserProperties().get("id").toString();
         messagesService.setMessage(messageId, messageSocket);
         messagesService.sendMessage(messageSocket, session);
