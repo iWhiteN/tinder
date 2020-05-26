@@ -4,6 +4,11 @@ async function getMessageId(idFrom, idTo) {
     return data.messageId;
 }
 
+async function getAllMessages(messagesId) {
+    const result = await fetch(`/api/v1/getAllMessages?messagesId=${messagesId}`);
+    return await result.json();
+}
+
 function getCookie(name) {
     let matches = document.cookie.match(new RegExp(
         "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
@@ -23,55 +28,78 @@ function openSocket(messageId) {
     return new WebSocket("ws://" + host + pathname + "/" + messageId);
 }
 
-async function run() {
-    let idFrom = getCookie("userId");
-    let idTo = getUrlParam("id");
-    let messageId = await getMessageId(idFrom, idTo)
-    const ws = openSocket(messageId);
+function parseDatetime(datetime) {
+    const date = new Date(datetime);
+    const dateTimeFormat = new Intl.DateTimeFormat(
+        'en',
+        {
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit',
+            hour: 'numeric',
+            minute: 'numeric'
+        })
+    const [{value: month}, ,
+        {value: day}, ,
+        {value: year}, ,
+        {value: hour}, ,
+        {value: minute}, ,
+        {value: dayPeriod}] = dateTimeFormat.formatToParts(date);
 
-    ws.onmessage = function (event) {
-        const messagesElem = document.getElementById("messages");
-        const message = JSON.parse(event.data);
+    return `${year} ${month} ${day}, ${hour}:${minute} ${dayPeriod}`;
+}
 
-        const date = new Date(message.datetime);
-        const dateTimeFormat = new Intl.DateTimeFormat(
-            'en',
-            {
-                year: 'numeric',
-                month: 'short',
-                day: '2-digit',
-                hour: 'numeric',
-                minute: 'numeric'
-            })
-        const [{value: month},,
-            {value: day},,
-            {value: year},,
-            {value: hour},,
-            {value: minute},,
-            {value: dayPeriod}] = dateTimeFormat.formatToParts(date)
-
-        messagesElem.innerHTML += message.from === +idFrom ?
-            `<li class="send-msg float-right mb-2">  
+function renderMessageSelf(content, datetime) {
+    const messagesElem = document.getElementById("messages");
+    messagesElem.innerHTML +=
+        `<li class="send-msg float-right mb-2">  
                 <p class="pt-1 pb-1 pl-2 pr-2 m-0 rounded">
-                    ${message.content}
+                    ${content}
                 </p>
-                <span class="send-msg-time">${year} ${month} ${day}, ${hour}:${minute} ${dayPeriod}</span>
-         </li>` :
-            `<li class="receive-msg float-left mb-2">
+                <span class="send-msg-time">${parseDatetime(datetime)}</span>
+         </li>`;
+}
+
+function renderMessageFrom(from, avatar, content, datetime) {
+    const messagesElem = document.getElementById("messages");
+    messagesElem.innerHTML +=
+        `<li class="receive-msg float-left mb-2">
             <div class="sender-img">
-                <img src="http://nicesnippets.com/demo/image1.jpg" class="float-left" alt="avatar">
+                <img src="${avatar}" class="float-left" alt="avatar">
             </div>
             <div class="receive-msg-desc float-left ml-2">
                 <p class="bg-white m-0 pt-1 pb-1 pl-2 pr-2 rounded">
-                    ${message.content}
+                    ${content}
                 </p>
-                <span class="receive-msg-time">${message.to}, ${year} ${month} ${day}, ${hour}:${minute} ${dayPeriod}</span>
+                <span class="receive-msg-time">${from}, ${parseDatetime(datetime)}</span>
             </div>
          </li>`;
+}
+
+async function run() {
+    let idFrom = getCookie("userId");
+    let idTo = getUrlParam("id");
+    let nameTo = "bob2"
+    let avatar = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxhcCYW4QDWMOjOuUTxOd50KcJvK-rop9qE9zRltSbVS_bO-cfWA";
+    let messageId = await getMessageId(idFrom, idTo)
+    const ws = openSocket(messageId);
+    const allMessages = await getAllMessages(messageId);
+    const sendMessage = document.getElementById("sendMessage");
+
+    allMessages.forEach(m => {
+        const {content, datetimeSend, from, to} = m;
+        from.userId === +idFrom ?
+            renderMessageSelf(content, datetimeSend) :
+            renderMessageFrom(to.name, to.avatarUrl, content, datetimeSend);
+    })
+
+    ws.onmessage = function (event) {
+        const {content, datetime, from, to} = JSON.parse(event.data);
+        from === +idFrom ?
+            renderMessageSelf(content, datetime) :
+            renderMessageFrom(nameTo, avatar, content, datetime);
     };
 
-
-    const sendMessage = document.getElementById("sendMessage");
     sendMessage.addEventListener("keypress", e => {
         if (e.key === 'Enter') {
             const content = {
