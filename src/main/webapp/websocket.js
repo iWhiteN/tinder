@@ -25,7 +25,8 @@ function getUrlParam(name) {
 function openSocket(messageId) {
     const host = document.location.host;
     const pathname = document.location.pathname;
-    return new WebSocket("ws://" + host + pathname + "/" + messageId);
+    const protocol = document.location.protocol;
+    return new WebSocket(`${protocol === 'https:' ? 'wss://' : 'ws://'}${host}${pathname}/${messageId}`);
 }
 
 function parseDatetime(datetime) {

@@ -11,7 +11,3 @@ values ('bob1@gmail.com', 'bob1', 'MTIzNDV0aW5kZXI=', current_timestamp,
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxhcCYW4QDWMOjOuUTxOd50KcJvK-rop9qE9zRltSbVS_bO-cfWA'),
        ('bob6@gmail.com', 'bob6', 'MTIzNDV0aW5kZXI=', current_timestamp,
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxhcCYW4QDWMOjOuUTxOd50KcJvK-rop9qE9zRltSbVS_bO-cfWA')
-
-
-insert into messages (id_messages, id_users_from, id_users_to, datetime_send)
-values ()
