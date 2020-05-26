@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -30,7 +31,9 @@ public class GetIdMessages extends HttpServlet {
             } else {
                 messageId = messagesService.setMessagesId(idFrom, idTo);
             }
-            Map<String, Integer> resultJson = Map.of("messageId", messageId);
+            Map<String, Integer> resultJson = new HashMap<String, Integer>() {{
+                put("messageId", messageId);
+            }};
 
             PrintWriter out = response.getWriter();
             response.setContentType("application/json");
