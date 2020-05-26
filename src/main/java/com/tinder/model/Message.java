@@ -8,15 +8,14 @@ import java.util.Date;
 
 @Data
 @Builder
-public class User {
-    private int userId;
+public class Message {
     @NonNull
-    private String email;
+    private User from;
     @NonNull
-    private String name;
-    private String pass;
+    private User to;
     @NonNull
-    private Date lastLogin;
+    private String content;
     @NonNull
-    private String avatarUrl;
+    private Date datetimeSend;
+    private int messagesId;
 }
