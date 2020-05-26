@@ -3,9 +3,10 @@ package com.tinder.dao;
 import com.tinder.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserDAO {
-    User getUserById();
+    Optional<User> getUserById(int userId);
 
     List<User> getAllLikedUsersByUserId(int userId);
 

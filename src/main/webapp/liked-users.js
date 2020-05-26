@@ -1,6 +1,6 @@
 let table = document.getElementById("table-body");
 
-fetch("http://localhost:8080/api/v1/getAllWithoutLikes")
+fetch("http://localhost:8080/api/v1/getAllLikedUsers")
     .then(response => response.json())
     .then(
         function (data) {

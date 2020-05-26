@@ -27,7 +27,7 @@ CREATE TABLE messages
     id            serial    NOT NULL,
     id_messages   int       not null,
     message       varchar(400),
-    datetime_send timestamp NOT NUL,
+    datetime_send timestamp NOT NULl,
     id_users_from integer   NOT NULL,
     id_users_to   integer   NOT NULL,
     CONSTRAINT messages_pkey PRIMARY KEY (id),

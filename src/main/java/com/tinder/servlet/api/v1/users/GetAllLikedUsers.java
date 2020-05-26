@@ -12,14 +12,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.OptionalInt;
 
-@WebServlet("/api/v1/getAllWithoutLikes")
-public class GetAllUsersWithoutLikes extends HttpServlet {
+@WebServlet("/api/v1/getAllLikedUsers")
+public class GetAllLikedUsers extends HttpServlet {
     private final UserService userService = UserService.getInstance();
     private final Gson gson = new Gson();
 
@@ -29,8 +27,8 @@ public class GetAllUsersWithoutLikes extends HttpServlet {
 //        if (userId == -1) {
 //            resp.sendError(500, "Wrong user id");
 //        }
-        List<User> allUsersWithoutLikesByUserId = userService.getAllUsersWithoutLikesByUserId(2);
-        String usersJsonString = this.gson.toJson(allUsersWithoutLikesByUserId);
+        List<User> allLikedUsersByUserId = userService.getAllLikedUsersByUserId(2);
+        String usersJsonString = this.gson.toJson(allLikedUsersByUserId);
         PrintWriter out = resp.getWriter();
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");

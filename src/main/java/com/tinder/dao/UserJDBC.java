@@ -8,6 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class UserJDBC  implements UserDAO{
     private static UserJDBC userJDBC;
@@ -25,46 +26,99 @@ public class UserJDBC  implements UserDAO{
     }
 
     @Override
-    public User getUserById() {
-        return null;
+    public Optional<User> getUserById(int userId) {
+        User user = null;
+        Connection con = getConnect();
+
+        try {
+            Statement stmt = Objects.requireNonNull(con).createStatement();
+            String sql = "Select from users where id = " + userId;
+            ResultSet resultSet = stmt.executeQuery(sql);
+            while (resultSet.next()) {
+                user = User.builder()
+                        .userId(resultSet.getInt("id"))
+                        .email(resultSet.getString("email"))
+                        .name(resultSet.getString("nick_name"))
+                        .pass(resultSet.getString("hash_pwd"))
+                        .lastLogin(resultSet.getTimestamp("last_connect"))
+                        .avatarUrl(resultSet.getString("avatar_url"))
+                        .build();
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return Optional.ofNullable(user);
     }
 
     @Override
     public List<User> getAllLikedUsersByUserId(int userId) {
-        return null;
-    }
-
-    @Override
-    public List<User> getAllUsersWithoutLikesByUserId(int userId) {
-        System.out.println(userId);
-        Connection con = null;
-        try {
-            con = basicDataSource.getConnection();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+        Connection con = getConnect();
 
         List<User> users = new ArrayList<>();
 
         try {
             Statement stmt = Objects.requireNonNull(con).createStatement();
-            String sql = "Select * from users t1 left join likes t2 on t1.id = t2.id_users_from where t2.id_users_to is null and t2.id_users_from = " + userId;
-            System.out.println(sql);
+            String sql = "Select * from users t1 left join likes t2 on t1.id = t2.id_users_to where t2.id_users_from = " + userId;
             ResultSet resultSet = stmt.executeQuery(sql);
 
             while (resultSet.next()) {
-                User user = new User(resultSet.getInt("id"), resultSet.getString("nick_name"),resultSet.getString("email"), resultSet.getString("hash_pwd"), resultSet.getTimestamp("last_connect").toInstant(), resultSet.getString("avatar_url"));
-                users.add(user);
+                users.add(
+                        User.builder()
+                                .userId(resultSet.getInt("id"))
+                                .email(resultSet.getString("email"))
+                                .name(resultSet.getString("nick_name"))
+                                .pass(resultSet.getString("hash_pwd"))
+                                .lastLogin(resultSet.getTimestamp("last_connect"))
+                                .avatarUrl(resultSet.getString("avatar_url"))
+                                .build());
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        System.out.println("Users ->" + users);
+        return users;
+    }
+
+    @Override
+    public List<User> getAllUsersWithoutLikesByUserId(int userId) {
+        Connection con = getConnect();
+
+        List<User> users = new ArrayList<>();
+
+        try {
+            Statement stmt = Objects.requireNonNull(con).createStatement();
+            String sql = "Select * from users t1 where not exists (select 1 from likes t2 where t1.id = t2.id_users_to) and t1.id <> " + userId;
+            ResultSet resultSet = stmt.executeQuery(sql);
+
+            while (resultSet.next()) {
+                users.add(
+                        User.builder()
+                        .userId(resultSet.getInt("id"))
+                        .email(resultSet.getString("email"))
+                        .name(resultSet.getString("nick_name"))
+                        .pass(resultSet.getString("hash_pwd"))
+                        .lastLogin(resultSet.getTimestamp("last_connect"))
+                        .avatarUrl(resultSet.getString("avatar_url"))
+                        .build());
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
         return users;
     }
 
     @Override
     public void addUser(User user) {
 
+    }
+
+    private Connection getConnect () {
+        Connection con = null;
+        try {
+            con = basicDataSource.getConnection();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return con;
     }
 }
