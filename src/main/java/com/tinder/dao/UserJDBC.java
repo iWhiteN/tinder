@@ -44,6 +44,8 @@ public class UserJDBC  implements UserDAO{
                         .avatarUrl(resultSet.getString("avatar_url"))
                         .build();
             }
+            stmt.close();
+            con.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -73,6 +75,8 @@ public class UserJDBC  implements UserDAO{
                                 .avatarUrl(resultSet.getString("avatar_url"))
                                 .build());
             }
+            stmt.close();
+            con.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -101,6 +105,8 @@ public class UserJDBC  implements UserDAO{
                         .avatarUrl(resultSet.getString("avatar_url"))
                         .build());
             }
+            stmt.close();
+            con.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -109,7 +115,22 @@ public class UserJDBC  implements UserDAO{
 
     @Override
     public void addUser(User user) {
+        Connection con = getConnect();
 
+        try {
+            PreparedStatement preparedStatement = Objects.requireNonNull(con).prepareStatement("Insert into users (nick_name, email, hash_pwd, last_connect, avatar_url) values (?, ?, ?, ?, ?)");
+            preparedStatement.setString(1, user.getName());
+            preparedStatement.setString(2, user.getEmail());
+            preparedStatement.setString(3, user.getPass());
+            preparedStatement.setTimestamp(4, new Timestamp(user.getLastLogin().getTime()));
+            preparedStatement.setString(5, user.getAvatarUrl());
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            con.close();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 
     private Connection getConnect () {

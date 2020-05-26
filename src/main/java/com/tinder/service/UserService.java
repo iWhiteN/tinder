@@ -32,4 +32,8 @@ public class UserService {
     public List<User> getAllUsersWithoutLikesByUserId(int userId) {
         return userJDBC.getAllUsersWithoutLikesByUserId(userId);
     }
+
+    public void addUser (User user) {
+        userJDBC.addUser(user);
+    }
 }
