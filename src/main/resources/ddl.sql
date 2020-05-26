@@ -4,7 +4,7 @@ CREATE TABLE users (
                        email varchar(100) NOT NULL,
                        hash_pwd varchar(255) NOT NULL,
                        last_connect timestamp NOT NULL,
-                       img_url varchar(255) NOT NULL,
+                       avatar_url varchar(255) NOT NULL,
                        CONSTRAINT users_pkey PRIMARY KEY (id)
 );
 
@@ -21,9 +21,12 @@ CREATE TABLE likes (
 
 CREATE TABLE messages (
                           id serial NOT NULL,
-                          message varchar(400) NOT NULL,
+                          id_messages int not null,
+                          message varchar(400),
                           datetime_send timestamp NOT NULL,
-                          id_users integer NOT NULL,
+                          id_users_from integer NOT NULL,
+                          id_users_to integer NOT NULL,
                           CONSTRAINT messages_pkey PRIMARY KEY (id),
-                          CONSTRAINT messages_id_users_fkey FOREIGN KEY (id_users) REFERENCES users(id)
+                          CONSTRAINT likes_id_users_from_fkey FOREIGN KEY (id_users_from) REFERENCES users(id),
+                          CONSTRAINT likes_id_users_to_fkey FOREIGN KEY (id_users_to) REFERENCES users(id)
 );

@@ -12,22 +12,26 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.OptionalInt;
 
-@WebServlet("/users/getAllWithoutLikes")
+@WebServlet("/api/v1/getAllWithoutLikes")
 public class GetAllUsersWithoutLikes extends HttpServlet {
     private final UserService userService = UserService.getInstance();
+    private final Gson gson = new Gson();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        int userId = readCookie(req, "userId").getAsInt();
-        if (userId == -1) {
-            resp.sendError(500, "Wrong user id");
-        }
-        List<User> allUsersWithoutLikesByUserId = userService.getAllUsersWithoutLikesByUserId(1);
-        String usersJsonString = new Gson().toJson(allUsersWithoutLikesByUserId);
+//        int userId = readCookie(req, "userId").getAsInt();
+//        if (userId == -1) {
+//            resp.sendError(500, "Wrong user id");
+//        }
+        List<User> allUsersWithoutLikesByUserId = userService.getAllUsersWithoutLikesByUserId(7);
+//        User user = new User(1, "name", "a@me.com", "wevwgfkgbeuwd", Instant.EPOCH, "rwbvefdv");
+        String usersJsonString = this.gson.toJson(allUsersWithoutLikesByUserId);
         PrintWriter out = resp.getWriter();
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");

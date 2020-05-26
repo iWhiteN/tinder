@@ -36,6 +36,7 @@ public class UserJDBC  implements UserDAO{
 
     @Override
     public List<User> getAllUsersWithoutLikesByUserId(int userId) {
+        System.out.println(userId);
         Connection con = null;
         try {
             con = basicDataSource.getConnection();
@@ -47,19 +48,18 @@ public class UserJDBC  implements UserDAO{
 
         try {
             Statement stmt = Objects.requireNonNull(con).createStatement();
-            String sql = "Select * from users t1" +
-                    "        left join likes t2 on t1.id = t2.id_users_from" +
-                    "        where t2.id_users_to is null and t2.id_users_to <> t1.id";
+            String sql = "Select * from users t1 left join likes t2 on t1.id = t2.id_users_from where t2.id_users_to is null and t2.id_users_from = " + userId;
+            System.out.println(sql);
             ResultSet resultSet = stmt.executeQuery(sql);
 
             while (resultSet.next()) {
-                User user = new User(resultSet.getInt("id"), resultSet.getString("nick_name"),resultSet.getString("email"), resultSet.getString("hash_pwd"), resultSet.getTimestamp("last_connect").toInstant(), resultSet.getString("img_url"));
+                User user = new User(resultSet.getInt("id"), resultSet.getString("nick_name"),resultSet.getString("email"), resultSet.getString("hash_pwd"), resultSet.getTimestamp("last_connect").toInstant(), resultSet.getString("avatar_url"));
                 users.add(user);
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-
+        System.out.println("Users ->" + users);
         return users;
     }
 
