@@ -9,5 +9,8 @@ cache:
 deploy:
   provider: heroku
   app: tinder-step-danit
+  branches:
+    only:
+      - master
   api_key:
     secure: $HEROKU_API_KEY
