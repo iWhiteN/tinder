@@ -114,23 +114,26 @@ public class UserJDBC  implements UserDAO{
     }
 
     @Override
-    public void addUser(User user) {
+    public int addUser(User user) {
         Connection con = getConnect();
-
+        int result = 0;
         try {
-            PreparedStatement preparedStatement = Objects.requireNonNull(con).prepareStatement("Insert into users (nick_name, email, hash_pwd, last_connect, avatar_url) values (?, ?, ?, ?, ?)");
+            PreparedStatement preparedStatement = Objects.requireNonNull(con).prepareStatement("Insert into users (nick_name, email, hash_pwd, last_connect, avatar_url) values (?, ?, ?, ?, ?) returning id");
             preparedStatement.setString(1, user.getName());
             preparedStatement.setString(2, user.getEmail());
             preparedStatement.setString(3, user.getPass());
             preparedStatement.setTimestamp(4, new Timestamp(user.getLastLogin().getTime()));
             preparedStatement.setString(5, user.getAvatarUrl());
-            preparedStatement.executeUpdate();
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            result = resultSet.getInt(1);
             preparedStatement.close();
             con.close();
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+        return result;
     }
 
     private Connection getConnect () {

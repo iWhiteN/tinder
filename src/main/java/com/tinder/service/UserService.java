@@ -3,6 +3,7 @@ package com.tinder.service;
 import com.tinder.dao.UserJDBC;
 import com.tinder.model.User;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +34,10 @@ public class UserService {
         return userJDBC.getAllUsersWithoutLikesByUserId(userId);
     }
 
-    public void addUser (User user) {
-        userJDBC.addUser(user);
+    public int addUser (User user) {
+        String pass = user.getPass() + "tinder";
+        String encodedPass = Base64.getEncoder().encodeToString(pass.getBytes());
+        user.setPass(encodedPass);
+        return userJDBC.addUser(user);
     }
 }

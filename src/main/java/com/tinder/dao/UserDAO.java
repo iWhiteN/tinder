@@ -12,5 +12,5 @@ public interface UserDAO {
 
     List<User> getAllUsersWithoutLikesByUserId(int userId);
 
-    void addUser(User user);
+    int addUser(User user);
 }
