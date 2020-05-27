@@ -1,8 +1,9 @@
 language: java
+sudo: false
 jdk:
   - openjdk8
 script:
-  - sudo /usr/local/maven/bin/mvn clean package
+  - mvn clean package
 cache:
   directories:
     - $HOME/.m2
