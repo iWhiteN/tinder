@@ -8,6 +8,6 @@ cache:
     - $HOME/.m2
 deploy:
   provider: heroku
+  app: tinder-step-danit
   api_key:
     secure: $HEROKU_API_KEY
-  app: tinder-step-danit
