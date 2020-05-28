@@ -1,6 +1,7 @@
 package com.tinder.service;
 
 import com.tinder.dao.UserJDBC;
+import com.tinder.model.Credentials;
 import com.tinder.model.User;
 
 import java.util.Base64;
@@ -39,5 +40,19 @@ public class UserService {
         String encodedPass = Base64.getEncoder().encodeToString(pass.getBytes());
         user.setPass(encodedPass);
         return userJDBC.addUser(user);
+    }
+
+    public boolean authorizeUser(int userId, Credentials credentials) {
+        boolean result = false;
+        Optional<User> userById = userJDBC.getUserById(userId);
+        if (userById.isPresent()) {
+            User user = userById.get();
+            String pass = new String(Base64.getDecoder().decode(user.getPass()));
+            pass = pass.substring(0, pass.length() - 6);
+            if (credentials.getPass().equals(pass) && credentials.getEmail().equals(user.getEmail())) {
+                result = true;
+            }
+        }
+        return result;
     }
 }

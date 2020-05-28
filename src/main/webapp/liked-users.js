@@ -1,6 +1,8 @@
 let table = document.getElementById("table-body");
+let host = document.location.host;
+let protocol = document.location.protocol;
 
-fetch("http://localhost:8080/api/v1/getAllLikedUsers")
+fetch(`${protocol}//${host}/api/v1/getAllLikedUsers`)
     .then(response => response.json())
     .then(
         function (data) {
@@ -8,7 +10,7 @@ fetch("http://localhost:8080/api/v1/getAllLikedUsers")
                 let now = new Date().getTime();
                 let lastLogin = new Date(el.lastLogin).getTime();
                 let diffInDays = Math.round((now - lastLogin)/(1000 * 3600 * 24));
-                table.innerHTML += `<tr>
+                table.innerHTML += `<tr class="user-list" id=${el.userId}>
                 <td width="10">
                   <div class="avatar-img">
                     <img class="img-circle" src=${el.avatarUrl} />  

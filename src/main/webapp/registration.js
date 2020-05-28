@@ -1,7 +1,9 @@
 let submit = document.getElementById("submit");
+let host = document.location.host;
+let protocol = document.location.protocol;
 
 submit.addEventListener("click", function (e) {
-    console.log(e);
+    e.preventDefault();
     let pass = document.getElementById("inputPassword").value;
     let confirmPass = document.getElementById("confirmPassword").value;
     if (pass !== confirmPass) {
@@ -17,16 +19,12 @@ submit.addEventListener("click", function (e) {
         avatarUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxhcCYW4QDWMOjOuUTxOd50KcJvK-rop9qE9zRltSbVS_bO-cfWA"
     };
 
-    fetch('http://localhost:8080/api/v1/newUser', {
+    fetch(`${protocol}//${host}/api/v1/newUser`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8'
         },
         body: JSON.stringify(user)
     })
-        .then(response => response.json())
-        .then(id => {
-            alert(id);
-            document.cookie = `userId=${id}`
-        });
+        .then(window.location.replace("users"))
 });

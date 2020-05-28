@@ -32,7 +32,7 @@ public class UserJDBC  implements UserDAO{
 
         try {
             Statement stmt = Objects.requireNonNull(con).createStatement();
-            String sql = "Select from users where id = " + userId;
+            String sql = "Select id, nick_name, email, hash_pwd, last_connect, avatar_url from users where id = " + userId;
             ResultSet resultSet = stmt.executeQuery(sql);
             while (resultSet.next()) {
                 user = User.builder()
