@@ -30,6 +30,7 @@ public class AuthenticationFilter implements Filter {
 
         boolean loginRequest = request.getRequestURI().equals(loginURI);
         boolean registrationRequest = request.getRequestURI().equals(registrationURI);
+        boolean isStaticResource = request.getRequestURI().startsWith("/static");
 
         Optional<Cookie[]> cookies = Optional.ofNullable(request.getCookies());
         String isAuth = cookies.map(value -> Arrays.stream(value)
@@ -38,7 +39,7 @@ public class AuthenticationFilter implements Filter {
                 .findAny()
                 .orElse("false")).orElse("false");
 
-        if (isAuth.equals("true") || loginRequest || registrationRequest) {
+        if (isAuth.equals("true") || loginRequest || registrationRequest || isStaticResource) {
             filterChain.doFilter(request, response);
         } else {
             response.sendRedirect(loginURI);
