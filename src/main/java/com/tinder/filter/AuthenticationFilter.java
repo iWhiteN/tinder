@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Optional;
 
 @WebFilter("/*")
 public class AuthenticationFilter implements Filter {
@@ -25,15 +26,19 @@ public class AuthenticationFilter implements Filter {
 
         String loginURI = request.getContextPath() + "/login";
 
-        boolean loginRequest = request.getRequestURI().equals(loginURI);
+        String registrationURI = request.getContextPath() + "/registration";
 
-        String isAuth = Arrays.stream(request.getCookies())
+        boolean loginRequest = request.getRequestURI().equals(loginURI);
+        boolean registrationRequest = request.getRequestURI().equals(registrationURI);
+
+        Optional<Cookie[]> cookies = Optional.ofNullable(request.getCookies());
+        String isAuth = cookies.map(value -> Arrays.stream(value)
                 .filter(c -> key.equals(c.getName()))
                 .map(Cookie::getValue)
                 .findAny()
-                .orElse("false");
+                .orElse("false")).orElse("false");
 
-        if (isAuth.equals("true") || loginRequest) {
+        if (isAuth.equals("true") || loginRequest || registrationRequest) {
             filterChain.doFilter(request, response);
         } else {
             response.sendRedirect(loginURI);
