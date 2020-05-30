@@ -1,6 +1,6 @@
 let submit = document.getElementById("submit");
 let host = document.location.host;
-let protocol = document.location.protocol;1
+let protocol = document.location.protocol;
 
 submit.addEventListener("click", function (e) {
     e.preventDefault();

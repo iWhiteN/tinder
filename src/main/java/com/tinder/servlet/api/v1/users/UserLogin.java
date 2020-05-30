@@ -6,6 +6,7 @@ import com.tinder.service.UserService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +31,8 @@ public class UserLogin extends HttpServlet {
         boolean result = userService.authorizeUser(userId, credentials);
 
         if(result) {
+            Cookie authCookie = new Cookie("auth", "true");
+            resp.addCookie(authCookie);
             resp.setStatus(200);
         } else {
             resp.setStatus(400);
