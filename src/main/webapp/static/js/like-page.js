@@ -26,7 +26,7 @@ async function clickLikeDislike(e) {
     if (type === 'like') {
         window.location.href = `${protocol}//${host}/messages?id=${to}`;
     } else {
-        window.location.href = `${protocol}//${host}/users`
+        window.location.href = `${protocol}//${host}/liked-users`
     }
 }
 
