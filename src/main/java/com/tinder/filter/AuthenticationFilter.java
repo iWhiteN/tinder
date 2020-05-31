@@ -18,7 +18,7 @@ public class AuthenticationFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
@@ -34,10 +34,14 @@ public class AuthenticationFilter implements Filter {
 
         OptionalInt id = readCookie(request, key);
 
-        if (id.getAsInt() != -1 || loginRequest || registrationRequest || isStaticResource || isRegNewUser || isLoginUser) {
-            filterChain.doFilter(request, response);
-        } else {
-            response.sendRedirect(loginURI);
+        try {
+            if (id.getAsInt() != -1 || loginRequest || registrationRequest || isStaticResource || isRegNewUser || isLoginUser) {
+                filterChain.doFilter(request, response);
+            } else {
+                response.sendRedirect(loginURI);
+            }
+        } catch (IOException | ServletException e) {
+            e.printStackTrace();
         }
     }
 
