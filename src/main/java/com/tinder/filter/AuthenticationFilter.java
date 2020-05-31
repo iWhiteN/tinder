@@ -2,12 +2,9 @@ package com.tinder.filter;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Optional;
 import java.util.OptionalInt;
 
 import static com.tinder.utils.CookieReader.readCookie;
@@ -33,10 +30,11 @@ public class AuthenticationFilter implements Filter {
 
         boolean loginRequest = request.getRequestURI().equals(loginURI);
         boolean registrationRequest = request.getRequestURI().equals(registrationURI);
+        boolean isStaticResource = request.getRequestURI().startsWith("/static");
 
         OptionalInt id = readCookie(request, key);
 
-        if (id.getAsInt() != -1 || loginRequest || registrationRequest) {
+        if (id.getAsInt() != -1 || loginRequest || registrationRequest || isStaticResource) {
             filterChain.doFilter(request, response);
         } else {
             response.sendRedirect(loginURI);
