@@ -94,12 +94,13 @@ async function run() {
     nameToEl.innerHTML = nameTo;
     const allMessages = await getAllMessages(messageId);
     const sendMessage = document.getElementById("sendMessage");
+    console.log(allMessages);
 
     allMessages.forEach(m => {
         const {content, datetimeSend, from, to} = m;
         from.userId === +idFrom ?
             renderMessageSelf(content, datetimeSend) :
-            renderMessageFrom(to.name, to.avatarUrl, content, datetimeSend);
+            renderMessageFrom(from.name, from.avatarUrl, content, datetimeSend);
     })
 
     ws.onmessage = function (event) {
