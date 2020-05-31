@@ -8,9 +8,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/like-page")
-public class LikePage extends HttpServlet {
+public class LikePageServlet extends HttpServlet {
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("/like-page.html").forward(req, resp);
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+        try {
+            req.getRequestDispatcher("/like-page.html").forward(req, resp);
+        } catch (ServletException | IOException e) {
+            e.printStackTrace();
+        }
     }
 }

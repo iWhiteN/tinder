@@ -1,6 +1,6 @@
 package com.tinder.dao;
 
-import com.tinder.config.DataSource;
+import com.tinder.ConnectionPool.DataSource;
 import com.tinder.model.Message;
 import com.tinder.model.MessageSocket;
 import com.tinder.model.User;
