@@ -16,6 +16,7 @@ public final class DataSource {
                 Properties prop = new Properties();
                 prop.load(input);
                 HikariConfig config = new HikariConfig();
+                config.setDriverClassName(prop.getProperty("db.driver"));
                 config.setJdbcUrl(prop.getProperty("db.url"));
                 config.setUsername(prop.getProperty("db.user"));
                 config.setPassword(prop.getProperty("db.password"));
