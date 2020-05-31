@@ -30,3 +30,8 @@ fetch(`${protocol}//${host}/api/v1/getAllLikedUsers`)
             })
         }
     );
+
+table.addEventListener("click", function (e) {
+    window.location.replace(`messages?id=${e.target.parentElement.id}`)
+    console.log(e.target.parentElement.id);
+})
