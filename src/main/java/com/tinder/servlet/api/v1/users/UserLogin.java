@@ -2,6 +2,7 @@ package com.tinder.servlet.api.v1.users;
 
 import com.google.gson.Gson;
 import com.tinder.model.Credentials;
+import com.tinder.model.User;
 import com.tinder.service.UserService;
 
 import javax.servlet.ServletException;
@@ -11,8 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
-import static com.tinder.utils.CookieReader.readCookie;
+import java.util.Optional;
 
 @WebServlet("/api/v1/login")
 public class UserLogin extends HttpServlet {
@@ -23,15 +23,16 @@ public class UserLogin extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Credentials credentials = gson.fromJson(req.getReader(), Credentials.class);
 
-        int userId = readCookie(req, "userId").getAsInt();
-        if (userId == -1) {
-            resp.sendError(400, "Wrong user id");
-        }
+        Optional<User> user = userService.authorizeUser(credentials);
 
-        boolean result = userService.authorizeUser(userId, credentials);
+        if (user.isPresent()) {
+            Cookie cookie = new Cookie("userId", String.valueOf(user.get().getUserId()));
+            cookie.setMaxAge(30 * 24 * 60 * 60);
+            cookie.setPath("/");
+            resp.addCookie(cookie);
 
-        if(result) {
             Cookie authCookie = new Cookie("auth", "true");
+            authCookie.setPath("/");
             resp.addCookie(authCookie);
             resp.setStatus(200);
         } else {

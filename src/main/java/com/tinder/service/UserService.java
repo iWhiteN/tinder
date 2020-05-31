@@ -23,7 +23,7 @@ public class UserService {
         return userService;
     }
 
-    public Optional<User> getUserById (int userId) {
+    public Optional<User> getUserById(int userId) {
         return userJDBC.getUserById(userId);
     }
 
@@ -35,24 +35,22 @@ public class UserService {
         return userJDBC.getAllUsersWithoutLikesByUserId(userId);
     }
 
-    public int addUser (User user) {
+    public int addUser(User user) {
         String pass = user.getPass() + "tinder";
         String encodedPass = Base64.getEncoder().encodeToString(pass.getBytes());
         user.setPass(encodedPass);
         return userJDBC.addUser(user);
     }
 
-    public boolean authorizeUser(int userId, Credentials credentials) {
-        boolean result = false;
-        Optional<User> userById = userJDBC.getUserById(userId);
-        if (userById.isPresent()) {
-            User user = userById.get();
-            String pass = new String(Base64.getDecoder().decode(user.getPass()));
-            pass = pass.substring(0, pass.length() - 6);
-            if (credentials.getPass().equals(pass) && credentials.getEmail().equals(user.getEmail())) {
-                result = true;
-            }
+    public Optional<User> authorizeUser(Credentials credentials) {
+        Optional<User> userResult = Optional.empty();
+        String pass = credentials.getPass() + "tinder";
+        String encodedPass = Base64.getEncoder().encodeToString(pass.getBytes());
+        credentials.setPass(encodedPass);
+        Optional<User> user = userJDBC.getUserWithCredentials(credentials);
+        if (user.isPresent()) {
+            userResult = user;
         }
-        return result;
+        return userResult;
     }
 }

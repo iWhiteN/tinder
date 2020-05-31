@@ -23,14 +23,14 @@ public class AuthenticationFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
         String key = "auth";
-
         String loginURI = request.getContextPath() + "/login";
-
         String registrationURI = request.getContextPath() + "/registration";
 
         boolean loginRequest = request.getRequestURI().equals(loginURI);
         boolean registrationRequest = request.getRequestURI().equals(registrationURI);
         boolean isStaticResource = request.getRequestURI().startsWith("/static");
+        boolean isRegNewUser = request.getRequestURI().startsWith("/api/v1/newUser");
+        boolean isLoginUser = request.getRequestURI().startsWith("/api/v1/login");
 
         Optional<Cookie[]> cookies = Optional.ofNullable(request.getCookies());
         String isAuth = cookies.map(value -> Arrays.stream(value)
@@ -39,7 +39,7 @@ public class AuthenticationFilter implements Filter {
                 .findAny()
                 .orElse("false")).orElse("false");
 
-        if (isAuth.equals("true") || loginRequest || registrationRequest || isStaticResource) {
+        if (isAuth.equals("true") || loginRequest || registrationRequest || isStaticResource || isRegNewUser || isLoginUser) {
             filterChain.doFilter(request, response);
         } else {
             response.sendRedirect(loginURI);

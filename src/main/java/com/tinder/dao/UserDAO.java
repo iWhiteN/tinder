@@ -1,5 +1,6 @@
 package com.tinder.dao;
 
+import com.tinder.model.Credentials;
 import com.tinder.model.User;
 
 import java.util.List;
