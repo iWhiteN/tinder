@@ -1,11 +1,10 @@
-package com.tinder.config;
+package com.tinder.ConnectionPool;
 
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.HikariConfig;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.*;
 import java.util.Properties;
 
 public final class DataSource {

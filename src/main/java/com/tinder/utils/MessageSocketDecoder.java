@@ -1,26 +1,18 @@
 package com.tinder.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.tinder.model.MessageSocket;
 
 import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;
 
 public class MessageSocketDecoder implements Decoder.Text<MessageSocket> {
-
-    private static ObjectMapper mapper = new ObjectMapper();
+    private final Gson gson = new Gson();
 
 
     @Override
     public MessageSocket decode(String s) {
-        MessageSocket message = null;
-        try {
-            message = mapper.readValue(s, MessageSocket.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return message;
+        return gson.fromJson(s, MessageSocket.class);
     }
 
     @Override

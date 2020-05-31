@@ -8,6 +8,7 @@ import com.tinder.utils.MessageSocketEncoder;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+import java.io.IOException;
 import java.sql.SQLException;
 
 @ServerEndpoint(
@@ -23,8 +24,12 @@ public class MessagesEndpoint {
     }
 
     @OnMessage
-    public void onMessage(Session session, MessageSocket messageSocket) throws SQLException {
-        messagesService.setMessage(session, messageSocket);
+    public void onMessage(Session session, MessageSocket messageSocket) {
+        try {
+            messagesService.setMessage(session, messageSocket);
+        } catch (SQLException | EncodeException | IOException throwables) {
+            throwables.printStackTrace();
+        }
     }
 
     @OnClose

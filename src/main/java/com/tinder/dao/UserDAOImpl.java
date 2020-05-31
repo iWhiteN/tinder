@@ -1,6 +1,6 @@
 package com.tinder.dao;
 
-import com.tinder.config.DataSource;
+import com.tinder.ConnectionPool.DataSource;
 import com.tinder.model.Credentials;
 import com.tinder.model.User;
 import com.zaxxer.hikari.HikariDataSource;
@@ -11,25 +11,25 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class UserJDBC implements UserDAO {
-    private static UserJDBC userJDBC;
+public class UserDAOImpl implements UserDAO {
+    private static UserDAOImpl userDAOImpl;
     private final HikariDataSource basicDataSource;
 
-    private UserJDBC() {
+    private UserDAOImpl() {
         basicDataSource = DataSource.getDataSource();
     }
 
-    public static UserJDBC getInstance() {
-        if (userJDBC == null) {
-            userJDBC = new UserJDBC();
+    public static UserDAOImpl getInstance() {
+        if (userDAOImpl == null) {
+            userDAOImpl = new UserDAOImpl();
         }
-        return userJDBC;
+        return userDAOImpl;
     }
 
     @Override
-    public Optional<User> getUserById(int userId) {
+    public Optional<User> getUserById(int userId) throws SQLException {
         User user = null;
-        Connection con = getConnect();
+        Connection con = basicDataSource.getConnection();
 
         try {
             Statement stmt = Objects.requireNonNull(con).createStatement();
@@ -55,8 +55,8 @@ public class UserJDBC implements UserDAO {
     }
 
     @Override
-    public List<User> getAllLikedUsersByUserId(int userId) {
-        Connection con = getConnect();
+    public List<User> getAllLikedUsersByUserId(int userId) throws SQLException {
+        Connection con = basicDataSource.getConnection();
 
         List<User> users = new ArrayList<>();
 
@@ -85,14 +85,21 @@ public class UserJDBC implements UserDAO {
     }
 
     @Override
-    public List<User> getAllUsersWithoutLikesByUserId(int userId) {
-        Connection con = getConnect();
+    public List<User> getAllUsersWithoutLikesByUserId(int userId) throws SQLException {
+        Connection con = basicDataSource.getConnection();
 
         List<User> users = new ArrayList<>();
 
         try {
             Statement stmt = Objects.requireNonNull(con).createStatement();
-            String sql = "Select * from users t1 where not exists (select 1 from likes t2 where t1.id = t2.id_users_to) and t1.id <> " + userId;
+            String sql = "" +
+                    "select *\n" +
+                    "from users t1\n" +
+                    "where id <> " + userId + "\n" +
+                    "  and t1.id not in (\n" +
+                    "    select t2.id_users_to\n" +
+                    "    from likes t2\n" +
+                    "    where t2.id_users_from = " + userId + ")";
             ResultSet resultSet = stmt.executeQuery(sql);
 
             while (resultSet.next()) {
@@ -115,8 +122,8 @@ public class UserJDBC implements UserDAO {
     }
 
     @Override
-    public int addUser(User user) {
-        Connection con = getConnect();
+    public int addUser(User user) throws SQLException {
+        Connection con = basicDataSource.getConnection();
         int result = 0;
         try {
             PreparedStatement preparedStatement = Objects.requireNonNull(con).prepareStatement("Insert into users (nick_name, email, hash_pwd, last_connect, avatar_url) values (?, ?, ?, ?, ?) returning id");
@@ -138,9 +145,9 @@ public class UserJDBC implements UserDAO {
     }
 
     @Override
-    public int getUserByCredentials(Credentials credentials) {
+    public int getUserByCredentials(Credentials credentials) throws SQLException {
         int id = 0;
-        Connection con = getConnect();
+        Connection con = basicDataSource.getConnection();
 
         try {
             String sql = "Select id from users where email = ? and hash_pwd = ?";
@@ -158,15 +165,5 @@ public class UserJDBC implements UserDAO {
         }
 
         return id;
-    }
-
-    private Connection getConnect() {
-        Connection con = null;
-        try {
-            con = basicDataSource.getConnection();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        return con;
     }
 }
