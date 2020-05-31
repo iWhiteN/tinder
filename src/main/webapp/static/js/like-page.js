@@ -2,6 +2,11 @@ async function setLikes(idFrom, idTo, typeLikes) {
     return await fetch(`/api/v1/setLikes?idFrom=${idFrom}&idTo=${idTo}&typeLikes=${typeLikes}`);
 }
 
+async function getUserById(id) {
+     let response = await fetch(`api/v1/getUserById?id=${id}`);
+     return await response.json();
+}
+
 function getCookie(name) {
     let matches = document.cookie.match(new RegExp(
         "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
@@ -26,19 +31,24 @@ async function clickLikeDislike(e) {
     if (type === 'like') {
         window.location.href = `${protocol}//${host}/messages?id=${to}`;
     } else {
-        window.location.href = `${protocol}//${host}/liked-users`
+        window.location.href = `${protocol}//${host}/users`
     }
 }
 
-const likeEl = document.getElementById("like");
-const dislikeEL = document.getElementById("dislike");
-const userNameEl = document.getElementById("userName");
-const avatarEl = document.getElementById("avatar");
-const userName = "bob";
-const avatar = "https://robohash.org/68.186.255.198.png";
+async function run() {
+    const { value:user } = await getUserById(getUrlParam("id"));
+    const likeEl = document.getElementById("like");
+    const dislikeEL = document.getElementById("dislike");
+    const userNameEl = document.getElementById("userName");
+    const avatarEl = document.getElementById("avatar");
+    const userName = user.name;
+    const avatar = user.avatarUrl;
 
-likeEl.addEventListener("click", clickLikeDislike);
-dislikeEL.addEventListener("click", clickLikeDislike);
+    likeEl.addEventListener("click", clickLikeDislike);
+    dislikeEL.addEventListener("click", clickLikeDislike);
 
-userNameEl.innerText = userName;
-avatarEl.setAttribute("src", avatar);
+    userNameEl.innerText = userName;
+    avatarEl.setAttribute("src", avatar);
+}
+
+run();

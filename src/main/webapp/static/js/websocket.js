@@ -4,6 +4,11 @@ async function getMessageId(idFrom, idTo) {
     return data.messageId;
 }
 
+async function getUserById(id) {
+    let response = await fetch(`api/v1/getUserById?id=${id}`);
+    return await response.json();
+}
+
 async function getAllMessages(messagesId) {
     const result = await fetch(`/api/v1/getAllMessages?messagesId=${messagesId}`);
     return await result.json();
@@ -80,8 +85,9 @@ function renderMessageFrom(from, avatar, content, datetime) {
 async function run() {
     let idFrom = getCookie("userId");
     let idTo = getUrlParam("id");
-    let nameTo = "bob2"
-    let avatar = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxhcCYW4QDWMOjOuUTxOd50KcJvK-rop9qE9zRltSbVS_bO-cfWA";
+    const { value: user } = await getUserById(idTo);
+    let nameTo = user.name
+    let avatar = user.avatarUrl;
     let messageId = await getMessageId(idFrom, idTo)
     const ws = openSocket(messageId);
     const allMessages = await getAllMessages(messageId);

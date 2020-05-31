@@ -26,5 +26,5 @@ submit.addEventListener("click", function (e) {
         },
         body: JSON.stringify(user)
     })
-        .then(window.location.replace("users"))
+        .then(res => window.location.replace("users"))
 });

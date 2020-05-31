@@ -1,5 +1,6 @@
 package com.tinder.dao;
 
+import com.tinder.model.Credentials;
 import com.tinder.model.User;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface UserDAO {
     List<User> getAllUsersWithoutLikesByUserId(int userId);
 
     int addUser(User user);
+
+    int getUserByCredentials(Credentials credentials);
 }

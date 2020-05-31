@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.OptionalInt;
+
+import static com.tinder.utils.CookieReader.readCookie;
 
 @WebFilter("/*")
 public class AuthenticationFilter implements Filter {
@@ -22,24 +25,19 @@ public class AuthenticationFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        String key = "auth";
-
+        String key = "userId";
         String loginURI = request.getContextPath() + "/login";
-
         String registrationURI = request.getContextPath() + "/registration";
 
         boolean loginRequest = request.getRequestURI().equals(loginURI);
         boolean registrationRequest = request.getRequestURI().equals(registrationURI);
         boolean isStaticResource = request.getRequestURI().startsWith("/static");
+        boolean isRegNewUser = request.getRequestURI().startsWith("/api/v1/newUser");
+        boolean isLoginUser = request.getRequestURI().startsWith("/api/v1/login");
 
-        Optional<Cookie[]> cookies = Optional.ofNullable(request.getCookies());
-        String isAuth = cookies.map(value -> Arrays.stream(value)
-                .filter(c -> key.equals(c.getName()))
-                .map(Cookie::getValue)
-                .findAny()
-                .orElse("false")).orElse("false");
+        OptionalInt id = readCookie(request, key);
 
-        if (isAuth.equals("true") || loginRequest || registrationRequest || isStaticResource) {
+        if (id.getAsInt() != -1 || loginRequest || registrationRequest || isStaticResource || isRegNewUser || isLoginUser) {
             filterChain.doFilter(request, response);
         } else {
             response.sendRedirect(loginURI);

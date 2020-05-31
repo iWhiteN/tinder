@@ -23,17 +23,13 @@ public class UserLogin extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Credentials credentials = gson.fromJson(req.getReader(), Credentials.class);
 
-        int userId = readCookie(req, "userId").getAsInt();
-        if (userId == -1) {
-            resp.sendError(400, "Wrong user id");
-        }
+        int result = userService.authorizeUser(credentials);
 
-        boolean result = userService.authorizeUser(userId, credentials);
-
-        if(result) {
-            Cookie authCookie = new Cookie("auth", "true");
-            resp.addCookie(authCookie);
-            resp.setStatus(200);
+        if (result != 0) {
+            Cookie cookie = new Cookie("userId", String.valueOf(result));
+            cookie.setMaxAge(30 * 24 * 60 * 60);
+            cookie.setPath("/");
+            resp.addCookie(cookie);
         } else {
             resp.setStatus(400);
         }

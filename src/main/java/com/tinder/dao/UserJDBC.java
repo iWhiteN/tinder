@@ -1,6 +1,7 @@
 package com.tinder.dao;
 
 import com.tinder.config.DataSource;
+import com.tinder.model.Credentials;
 import com.tinder.model.User;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class UserJDBC  implements UserDAO{
+public class UserJDBC implements UserDAO {
     private static UserJDBC userJDBC;
     private final HikariDataSource basicDataSource;
 
@@ -97,13 +98,13 @@ public class UserJDBC  implements UserDAO{
             while (resultSet.next()) {
                 users.add(
                         User.builder()
-                        .userId(resultSet.getInt("id"))
-                        .email(resultSet.getString("email"))
-                        .name(resultSet.getString("nick_name"))
-                        .pass(resultSet.getString("hash_pwd"))
-                        .lastLogin(resultSet.getTimestamp("last_connect"))
-                        .avatarUrl(resultSet.getString("avatar_url"))
-                        .build());
+                                .userId(resultSet.getInt("id"))
+                                .email(resultSet.getString("email"))
+                                .name(resultSet.getString("nick_name"))
+                                .pass(resultSet.getString("hash_pwd"))
+                                .lastLogin(resultSet.getTimestamp("last_connect"))
+                                .avatarUrl(resultSet.getString("avatar_url"))
+                                .build());
             }
             stmt.close();
             con.close();
@@ -136,7 +137,30 @@ public class UserJDBC  implements UserDAO{
         return result;
     }
 
-    private Connection getConnect () {
+    @Override
+    public int getUserByCredentials(Credentials credentials) {
+        int id = 0;
+        Connection con = getConnect();
+
+        try {
+            String sql = "Select id from users where email = ? and hash_pwd = ?";
+            PreparedStatement stmt = Objects.requireNonNull(con).prepareStatement(sql);
+            stmt.setString(1, credentials.getEmail());
+            stmt.setString(2, credentials.getPass());
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                id = resultSet.getInt("id");
+            }
+            stmt.close();
+            con.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return id;
+    }
+
+    private Connection getConnect() {
         Connection con = null;
         try {
             con = basicDataSource.getConnection();
