@@ -85,11 +85,13 @@ function renderMessageFrom(from, avatar, content, datetime) {
 async function run() {
     let idFrom = getCookie("userId");
     let idTo = getUrlParam("id");
-    const { value: user } = await getUserById(idTo);
+    const {value: user} = await getUserById(idTo);
     let nameTo = user.name
     let avatar = user.avatarUrl;
     let messageId = await getMessageId(idFrom, idTo)
     const ws = openSocket(messageId);
+    const nameToEl = document.getElementById("nameTo");
+    nameToEl.innerHTML = nameTo;
     const allMessages = await getAllMessages(messageId);
     const sendMessage = document.getElementById("sendMessage");
 
