@@ -18,9 +18,9 @@ public class GetAllMessages extends HttpServlet {
         String messagesId = request.getParameter("messagesId");
         try {
             String allMessagesByMessagesId = messagesService.getAllMessagesByMessagesId(messagesId);
-            PrintWriter out = response.getWriter();
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
+            PrintWriter out = response.getWriter();
             out.print(allMessagesByMessagesId);
             out.flush();
         } catch (SQLException | IOException throwables) {
