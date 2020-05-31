@@ -42,17 +42,11 @@ public class UserService {
         return userJDBC.addUser(user);
     }
 
-    public boolean authorizeUser(int userId, Credentials credentials) {
-        boolean result = false;
-        Optional<User> userById = userJDBC.getUserById(userId);
-        if (userById.isPresent()) {
-            User user = userById.get();
-            String pass = new String(Base64.getDecoder().decode(user.getPass()));
-            pass = pass.substring(0, pass.length() - 6);
-            if (credentials.getPass().equals(pass) && credentials.getEmail().equals(user.getEmail())) {
-                result = true;
-            }
-        }
-        return result;
+    public int authorizeUser(Credentials credentials) {
+        String pass = credentials.getPass() + "tinder";
+        String encodedPass = Base64.getEncoder().encodeToString(pass.getBytes());
+        credentials.setPass(encodedPass);
+
+        return userJDBC.getUserByCredentials(credentials);
     }
 }

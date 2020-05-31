@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.OptionalInt;
+
+import static com.tinder.utils.CookieReader.readCookie;
 
 @WebFilter("/*")
 public class AuthenticationFilter implements Filter {
@@ -22,7 +25,7 @@ public class AuthenticationFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        String key = "auth";
+        String key = "userId";
 
         String loginURI = request.getContextPath() + "/login";
 
@@ -31,14 +34,9 @@ public class AuthenticationFilter implements Filter {
         boolean loginRequest = request.getRequestURI().equals(loginURI);
         boolean registrationRequest = request.getRequestURI().equals(registrationURI);
 
-        Optional<Cookie[]> cookies = Optional.ofNullable(request.getCookies());
-        String isAuth = cookies.map(value -> Arrays.stream(value)
-                .filter(c -> key.equals(c.getName()))
-                .map(Cookie::getValue)
-                .findAny()
-                .orElse("false")).orElse("false");
+        OptionalInt id = readCookie(request, key);
 
-        if (isAuth.equals("true") || loginRequest || registrationRequest) {
+        if (id.getAsInt() != -1 || loginRequest || registrationRequest) {
             filterChain.doFilter(request, response);
         } else {
             response.sendRedirect(loginURI);
