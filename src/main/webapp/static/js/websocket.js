@@ -94,7 +94,6 @@ async function run() {
     nameToEl.innerHTML = nameTo;
     const allMessages = await getAllMessages(messageId);
     const sendMessage = document.getElementById("sendMessage");
-    console.log(allMessages);
 
     allMessages.forEach(m => {
         const {content, datetimeSend, from, to} = m;
