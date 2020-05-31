@@ -23,7 +23,7 @@ public class UserService {
         return userService;
     }
 
-    public Optional<User> getUserById(int userId) {
+    public Optional<User> getUserById (int userId) {
         return userJDBC.getUserById(userId);
     }
 
@@ -35,22 +35,18 @@ public class UserService {
         return userJDBC.getAllUsersWithoutLikesByUserId(userId);
     }
 
-    public int addUser(User user) {
+    public int addUser (User user) {
         String pass = user.getPass() + "tinder";
         String encodedPass = Base64.getEncoder().encodeToString(pass.getBytes());
         user.setPass(encodedPass);
         return userJDBC.addUser(user);
     }
 
-    public Optional<User> authorizeUser(Credentials credentials) {
-        Optional<User> userResult = Optional.empty();
+    public int authorizeUser(Credentials credentials) {
         String pass = credentials.getPass() + "tinder";
         String encodedPass = Base64.getEncoder().encodeToString(pass.getBytes());
         credentials.setPass(encodedPass);
-        Optional<User> user = userJDBC.getUserWithCredentials(credentials);
-        if (user.isPresent()) {
-            userResult = user;
-        }
-        return userResult;
+
+        return userJDBC.getUserByCredentials(credentials);
     }
 }

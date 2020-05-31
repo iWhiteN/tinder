@@ -1,6 +1,7 @@
 package com.tinder.dao;
 
 import com.tinder.config.DataSource;
+import com.tinder.model.Credentials;
 import com.tinder.model.User;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -134,6 +135,27 @@ public class UserJDBC  implements UserDAO{
             throwables.printStackTrace();
         }
         return result;
+    }
+
+    @Override
+    public int getUserByCredentials(Credentials credentials) {
+        int id = 0;
+        Connection con = getConnect();
+
+        try {
+            Statement stmt = Objects.requireNonNull(con).createStatement();
+            String sql = "Select id from users where email = " + credentials.getEmail() + " and hash_pwd = " + credentials.getPass();
+            ResultSet resultSet = stmt.executeQuery(sql);
+            while (resultSet.next()) {
+                id = resultSet.getInt("id");
+            }
+            stmt.close();
+            con.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return id;
     }
 
     private Connection getConnect () {
