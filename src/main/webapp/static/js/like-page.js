@@ -36,7 +36,7 @@ async function clickLikeDislike(e) {
 }
 
 async function run() {
-    const {value:user} = await getUserById(getUrlParam("id"));
+    const { value:user } = await getUserById(getUrlParam("id"));
     const likeEl = document.getElementById("like");
     const dislikeEL = document.getElementById("dislike");
     const userNameEl = document.getElementById("userName");

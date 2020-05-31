@@ -25,10 +25,11 @@ public class UserLogin extends HttpServlet {
 
         int result = userService.authorizeUser(credentials);
 
-        if(result != 0) {
+        if (result != 0) {
             Cookie cookie = new Cookie("userId", String.valueOf(result));
+            cookie.setMaxAge(30 * 24 * 60 * 60);
+            cookie.setPath("/");
             resp.addCookie(cookie);
-            resp.setStatus(200);
         } else {
             resp.setStatus(400);
         }

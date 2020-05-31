@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class UserJDBC  implements UserDAO{
+public class UserJDBC implements UserDAO {
     private static UserJDBC userJDBC;
     private final HikariDataSource basicDataSource;
 
@@ -98,13 +98,13 @@ public class UserJDBC  implements UserDAO{
             while (resultSet.next()) {
                 users.add(
                         User.builder()
-                        .userId(resultSet.getInt("id"))
-                        .email(resultSet.getString("email"))
-                        .name(resultSet.getString("nick_name"))
-                        .pass(resultSet.getString("hash_pwd"))
-                        .lastLogin(resultSet.getTimestamp("last_connect"))
-                        .avatarUrl(resultSet.getString("avatar_url"))
-                        .build());
+                                .userId(resultSet.getInt("id"))
+                                .email(resultSet.getString("email"))
+                                .name(resultSet.getString("nick_name"))
+                                .pass(resultSet.getString("hash_pwd"))
+                                .lastLogin(resultSet.getTimestamp("last_connect"))
+                                .avatarUrl(resultSet.getString("avatar_url"))
+                                .build());
             }
             stmt.close();
             con.close();
@@ -143,9 +143,11 @@ public class UserJDBC  implements UserDAO{
         Connection con = getConnect();
 
         try {
-            Statement stmt = Objects.requireNonNull(con).createStatement();
-            String sql = "Select id from users where email = " + credentials.getEmail() + " and hash_pwd = " + credentials.getPass();
-            ResultSet resultSet = stmt.executeQuery(sql);
+            String sql = "Select id from users where email = ? and hash_pwd = ?";
+            PreparedStatement stmt = Objects.requireNonNull(con).prepareStatement(sql);
+            stmt.setString(1, credentials.getEmail());
+            stmt.setString(2, credentials.getPass());
+            ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
                 id = resultSet.getInt("id");
             }
@@ -158,7 +160,7 @@ public class UserJDBC  implements UserDAO{
         return id;
     }
 
-    private Connection getConnect () {
+    private Connection getConnect() {
         Connection con = null;
         try {
             con = basicDataSource.getConnection();

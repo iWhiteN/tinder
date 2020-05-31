@@ -27,9 +27,5 @@ public class NewUser extends HttpServlet {
         cookie.setMaxAge(30 * 24 * 60 * 60);
         cookie.setPath("/");
         resp.addCookie(cookie);
-
-        Cookie authCookie = new Cookie("auth", "true");
-        authCookie.setPath("/");
-        resp.addCookie(authCookie);
     }
 }
