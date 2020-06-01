@@ -1,7 +1,5 @@
 # MVP - Tinder
 Demo - [https://tinder-step-danit.herokuapp.com](https://tinder-step-danit.herokuapp.com)
-Repo - [https://github.com/iWhiteN/tinder](https://github.com/iWhiteN/tinder)
-
 
 **Participants**
  - Loboda Roman 
